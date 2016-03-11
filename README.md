@@ -17,3 +17,25 @@ npm i && node main.js
 ```
 
 запуститься консюмер каторый прослушивает (созданную им) очередь и websocket на базе socketio
+
+#### Отправка почты
+Необходимо отправить в rabbit topic с routing_key = `async.mail.#`
+Ожидаеться следующий формат сообщения
+```json
+{
+    from: "",
+    to: "",
+    subject: "",
+    html: ""
+}
+```
+
+#### Отправка сообщения на front
+Необходимо отправить в rabbit topic с routing_key = `async.messenger.#`
+Ожидаеться следующий формат сообщения
+```json
+{
+    message: "",
+    type: "1/0",
+}
+```
