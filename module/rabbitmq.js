@@ -1,6 +1,7 @@
 var amq = require('amqp');
 var config = require('../config');
 var socket = require("./socket");
+var sender = require("./sender");
 
 // Устанавливаем соединение с раббитом
 var connection = amq.createConnection(config.rabbitConn);
@@ -15,7 +16,7 @@ connection.on('ready', function () {
         "autoDelete": false
     }, function(exchange) {
 
-        // определяем новую очередь
+        // определяем новую очередь для скана асихронных сообщений фронту
         connection.queue('async.messenger', {durable: true, autoDelete: false}, function (q) {
             // цепляем очередь по роуту к ексченджю
             q.bind(exchange.name, 'async.messenger.#');
@@ -23,13 +24,38 @@ connection.on('ready', function () {
             // подписываемся на события и принимаем их
             q.subscribe(function (message, headers, deliveryInfo, messageObject) {
                 var data = JSON.parse(message.data);
-
-                console.log(data);
+                // пример контекста
+                // data = {
+                //    message:"",
+                //    type:""
+                // };
                 // отправляем фронту гадкие сообщения
                 socket.emit('messenger:display', data);
             });
         });
 
+        // определяем новую очередь для скана задачь на отправку почты
+        connection.queue('async.mail', {durable: true, autoDelete: false}, function (q) {
+            // цепляем очередь по роуту к ексченджю
+            q.bind(exchange.name, 'async.mail.#');
+
+            // подписываемся на события и принимаем их
+            q.subscribe(function (message, headers, deliveryInfo, messageObject) {
+                var mail = JSON.parse(message.data);
+                // пример контекста
+                // mail = {
+                //    from: "",
+                //    to: "",
+                //    subject: "",
+                //    html: ""
+                // };
+
+                // отправляем почту
+                sender.sendMailAsync(mail).then(function(){
+                    console.log("E-Mail sended:", mail);
+                });
+            });
+        });
     });
 
 });

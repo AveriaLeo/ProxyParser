@@ -14,5 +14,24 @@ module.exports = {
         "ssl": {
             "enabled": false
         }
+    },
+    email: {
+        options: {
+            from: '' // sender address
+            // bcc: '',
+        },
+        transport: {
+            host: 'smtp.yandex.ru',
+            secure: true, // defines if the connection should use SSL (if true) or not (if false)
+            ignoreTLS: true, // turns off STARTTLS support if true
+            port: 465, // port for secure SMTP
+            auth: {
+                user: "login",
+                pass: "pass"
+            }
+            //tls: {
+            //    ciphers:'SSLv3'
+            //}
+        }
     }
 };
