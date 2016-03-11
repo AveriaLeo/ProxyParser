@@ -24,6 +24,7 @@ connection.on('ready', function () {
             q.subscribe(function (message, headers, deliveryInfo, messageObject) {
                 var data = JSON.parse(message.data);
 
+                console.log(data);
                 // отправляем фронту гадкие сообщения
                 socket.emit('messenger:display', data);
             });
