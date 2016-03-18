@@ -2,6 +2,7 @@ var amq = require('amqp');
 var config = require('../config');
 var socket = require("./socket");
 var sender = require("./sender");
+var smsSender = require("./smsSender");
 
 // Устанавливаем соединение с раббитом
 var connection = amq.createConnection(config.rabbitConn);
@@ -31,6 +32,27 @@ connection.on('ready', function () {
                 // };
                 // отправляем фронту гадкие сообщения
                 socket.emit('messenger:display', data);
+            });
+        });
+
+        // определяем новую очередь для скана задачь на отправку sms
+        connection.queue('async.sms', {durable: true, autoDelete: false}, function (q) {
+            // цепляем очередь по роуту к ексченджю
+            q.bind(exchange.name, 'async.sms.#');
+
+            // подписываемся на события и принимаем их
+            q.subscribe(function (message, headers, deliveryInfo, messageObject) {
+                var sms = JSON.parse(message.data);
+                // пример контекста
+                // sms = {
+                //    to: "",
+                //    text: "",
+                // };
+
+                // отправляем почту
+                smsSender.sendSmsAsync(sms).then(function(response){
+                    console.log("SMS sended:", response);
+                });
             });
         });
 
