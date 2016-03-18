@@ -1,4 +1,4 @@
-var fetch = require('whatwg-fetch');
+var fetchLib = require('whatwg-fetch');
 var config = require('../config');
 var url = config.sms.url;
 
@@ -7,7 +7,7 @@ module.exports = {
     sendSmsAsync: function sendSmsAsync(sms) {
         var text = sms.text.replace(' ', '+');
 
-        fetch(url + '&to=' + sms.to + '&text=' + text + '&test=1', {
+        fetchLib.fetch(url + '&to=' + sms.to + '&text=' + text + '&test=1', {
             'method': 'get'
         }).then(function (response) {
             console.log('/////////////////start/////////////////');
