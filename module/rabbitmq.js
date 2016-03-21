@@ -51,7 +51,7 @@ connection.on('ready', function () {
 
                 // отправляем почту
                 smsSender.sendSmsAsync(sms).then(function(response){
-                    console.log("SMS sended:", response);
+                    console.log("SMS sended:", {'sms': sms, 'status': response});
                 });
             });
         });
