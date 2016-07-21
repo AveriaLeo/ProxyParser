@@ -3,6 +3,6 @@
 var
     express = require('express'),
     app = express(),
-    rmq = require('./module/rabbitmq');
+    rmq = require('./module/executor');
 
 module.exports = app;
